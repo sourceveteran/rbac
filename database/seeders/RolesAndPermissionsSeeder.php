@@ -41,13 +41,20 @@ class RolesAndPermissionsSeeder extends Seeder
         $viewerRole = Role::firstOrCreate(['name' => 'viewer']);
         $viewerRole->syncPermissions(['view posts']);
 
-        // Optional: assign role to a demo user
-        $user = User::first(); // or create a user here
-        if ($user) {
-            $user->assignRole('admin');
-            $user = User::where('id','<>',$user->id)->first();
-            if($user){
-                $user->assignRole('editor');
+        // assign role to a demo user
+        $admin = User::first();
+        if ($admin) {
+            $admin->assignRole('admin');
+            $editor = User::where('id','<>',$admin->id)->first();
+            if($editor){
+                $editor->assignRole('editor');
+                $viewer = User::where([
+                    ['id','<>',$admin->id],
+                    ['id','<>',$editor->id],
+                ])->first();
+                if($viewer){
+                    $viewer->assignRole('viewer');
+                }
             }
         }
 
